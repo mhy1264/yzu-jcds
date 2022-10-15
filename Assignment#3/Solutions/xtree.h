@@ -61,27 +61,21 @@ public:
 		}
 	}
 
-	// rebalance for insertion; u points to the inserted node
-	// done 
+	// rebalance for insertion; u points to the inserted node 
 	void reBalance(TreeNode<value_type>* u)
 	{  // u->parent cannot be the root
 		TreeNode<value_type>* pu = u->parent;
 		TreeNode<value_type>* gu = pu->parent;
-		TreeNode<value_type>* uncle = Sibling(pu); // uncle of u
+		TreeNode<value_type>* uncle = Sibling(pu,gu); // uncle of u
 
 		//just change the color
 		if (uncle->color == RED)
 		{
-			if (gu == myHead->parent)
-			{
-				pu->color = BLACK;
-				uncle->color = BLACK;
-			}
-			else
+			pu->color = BLACK;
+			uncle->color = BLACK;
+			if (gu != myHead->parent)
 			{
 				gu->color = RED;
-				pu->color = BLACK;
-				uncle->color = BLACK;
 				if (gu->parent->color == RED)
 					reBalance(gu);
 			}
@@ -115,30 +109,27 @@ public:
 					u->color = BLACK;
 					pu->color = RED;
 					gu->color = RED;
-
 				}
 				else // RRB
 				{
 					RRRotation(pu);
 					pu->color = BLACK;
 					gu->color = RED;
-
 				}
 			}
 		}
 	}
 
-	TreeNode< value_type >* Sibling(TreeNode< value_type >* node, TreeNode< value_type >* par = nullptr)
+	TreeNode< value_type >* Sibling(TreeNode< value_type >* child, TreeNode< value_type >* par)
 	{
-		if (node->isNil == 0)
-			par = node->parent;
-		if (par->left == node)
+		if (child->isNil == 0)
+			par = child->parent;
+		if (par->left == child)
 			return par->right;
-		else if (par->right == node)
+		else if (par->right == child)
 			return par->left;
 		else
 			return myHead;//orphan
-
 	}
 
 	// rotate right at gu, where pu = gu->left and u = pu->left
@@ -260,12 +251,10 @@ public:
 		mySize--;
 	}
 
-
 	// rebalance for deletion; Case 4 in "Ch 10 Sec 3.pptx"
 	void fixUp(TreeNode<value_type>* N, TreeNode<value_type>* P)
 	{
 		TreeNode< value_type >* S = Sibling(N, P);
-
 
 		if (S->color == BLACK && S->right->color == BLACK && S->left->color == BLACK && P->color == RED) // Case 4.4
 		{
